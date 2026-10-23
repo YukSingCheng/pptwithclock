@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>PPT with clock</title>
+
+<link rel="stylesheet" href="./css/pptxjs.css">
+<link rel="stylesheet" href="./css/nv.d3.min.css">
+
+<script type="text/javascript" src="./js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="./js/jszip.min.js"></script>
+<script type="text/javascript" src="./js/filereader.js"></script>
+<script type="text/javascript" src="./js/d3.min.js"></script>
+<script type="text/javascript" src="./js/nv.d3.min.js"></script>
+<script type="text/javascript" src="./js/pptxjs.js"></script>
+<script type="text/javascript" src="./js/divs2slides.js"></script>
+
+<script type="text/javascript" src="./js/jquery.fullscreen-min.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        var oldWidth, oldMargin, isFullscreenMode = false;
+        $("#fullscreen-btn").on("click", function(){
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                const docElm = document.documentElement;
+                if (docElm.requestFullscreen) {
+                    docElm.requestFullscreen();
+                } else if (docElm.webkitRequestFullScreen) {
+                    docElm.webkitRequestFullScreen();
+                } else if (docElm.msRequestFullscreen) {
+                    docElm.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }		
+        });
+        
+
+        // 实时读取本地时间函数
+        function updateClock() {
+            var now = new Date();
+            
+            // 时间：HH:MM:SS
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            var seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            // 日期：月份英文前三位-日期-年份
+            var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var month = monthNames[now.getMonth()];
+            var day = String(now.getDate()).padStart(2, '0');
+            var year = now.getFullYear();
+            
+            $("#clock-time").text(hours + ":" + minutes + ":" + seconds);
+            $("#clock-date").text(month + "-" + day + "-" + year);
+        }
+
+        // 立即更新一次并每秒刷新
+        updateClock();
+        setInterval(updateClock, 1000);
+    });
+</script>
+<style>
+    html, body { margin: 0; padding: 0; }
+    #warper { margin-right: auto; margin-left: auto; width: window.innerWidth; }
+    #container {
+        width:window.innerWidth; 
+        zoom: 1; 
+    }
+
+    /* 顶部控制栏布局 */
+    .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        position: relative;
+    }
+
+    /* 居中黑底白字时钟 */
+    .clock-display {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #000;
+        color: #fff;
+        padding: 6px 16px;
+        border-radius: 4px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 30px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+</style>
+</head>
+<body>
+    <div id="warper">
+        <!-- 顶部控制行：左侧为上传按钮，正中间为时钟 -->
+        <div class="top-bar">
+            <div>            
+                <input id="uploadFileInput" type="file" />
+                <input id="fullscreen-btn" type="button" value="Fullscreen" />
+            </div>
+            <div class="clock-display">
+                <span id="clock-time">00:00:00</span>
+                <span id="clock-date">Jan-01-1970</span>
+            </div>
+            
+        </div>
+
+ 
+        <div id="container">
+            <div id="result"></div>
+        </div>
+    </div>
+<script>
+$("#result").pptxToHtml({
+    pptxFileUrl: "Sample_12.pptx",
+    fileInputId: "uploadFileInput",
+    slideMode: false,
+    keyBoardShortCut: false
+});
+</script>
+
+</body>
+</html>
